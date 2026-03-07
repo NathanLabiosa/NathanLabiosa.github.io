@@ -55,62 +55,143 @@
     setTimeout(typeNext, 700);
   }
 
-  /* ---- 3. Particle Background ---- */
+  /* ---- 3. Neural Network Background ---- */
   var canvas = document.createElement('canvas');
   canvas.id = 'particle-canvas';
   document.body.prepend(canvas);
   var ctx = canvas.getContext('2d');
   var W, H;
-  var NPARTICLES = 55, CONNECT = 120;
-  var pts = [];
+  var LAYERS = [3, 5, 7, 7, 5, 3];
+  var nodes = [], conns = [], pulses = [], nodeGlow = [];
 
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  function mkPt() {
-    return { x: Math.random() * W, y: Math.random() * H,
-             vx: (Math.random() - 0.5) * 0.38, vy: (Math.random() - 0.5) * 0.38,
-             r: Math.random() * 1.1 + 0.4 };
-  }
-  for (var i = 0; i < NPARTICLES; i++) pts.push(mkPt());
-
-  function accentColor() {
-    return document.documentElement.getAttribute('data-theme') === 'dark' ? '#818CF8' : '#4F46E5';
+  function getColorRGB() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? '129,140,248' : '79,70,229';
   }
 
-  function frame() {
-    if (document.hidden) { requestAnimationFrame(frame); return; }
-    ctx.clearRect(0, 0, W, H);
-    var col = accentColor();
-    for (var a = 0; a < pts.length; a++) {
-      var p = pts[a];
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.42;
-      ctx.fill();
-      for (var b = a + 1; b < pts.length; b++) {
-        var dx = p.x - pts[b].x, dy = p.y - pts[b].y;
-        var d = Math.sqrt(dx * dx + dy * dy);
-        if (d < CONNECT) {
-          ctx.globalAlpha = (1 - d / CONNECT) * 0.13;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(pts[b].x, pts[b].y);
-          ctx.strokeStyle = col;
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
+  function build() {
+    nodes = []; conns = []; nodeGlow = [];
+    var marginX = W * 0.12, marginY = H * 0.12;
+    var usableW = W - marginX * 2, usableH = H - marginY * 2;
+    for (var l = 0; l < LAYERS.length; l++) {
+      var count = LAYERS[l];
+      var x = marginX + (l / (LAYERS.length - 1)) * usableW;
+      for (var n = 0; n < count; n++) {
+        var y = marginY + (count === 1 ? usableH / 2 : (n / (count - 1)) * usableH);
+        nodes.push({ x: x, y: y, layer: l, idx: n });
+        nodeGlow.push(0);
+      }
+    }
+    // Build connections between adjacent layers
+    for (var l = 0; l < LAYERS.length - 1; l++) {
+      var aStart = 0, bStart = 0;
+      for (var ll = 0; ll < l; ll++) aStart += LAYERS[ll];
+      for (var ll = 0; ll <= l; ll++) bStart += LAYERS[ll];
+      for (var a = 0; a < LAYERS[l]; a++) {
+        for (var b = 0; b < LAYERS[l + 1]; b++) {
+          conns.push({ a: aStart + a, b: bStart + b });
         }
       }
     }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(frame);
   }
-  frame();
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    build();
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  // Spawn pulses periodically
+  setInterval(function () {
+    if (conns.length === 0) return;
+    var c = conns[Math.floor(Math.random() * conns.length)];
+    // ~50% chance to travel forward, 50% backward for variety
+    var forward = Math.random() > 0.5;
+    pulses.push({ conn: c, t: 0, speed: 0.008 + Math.random() * 0.006, fwd: forward });
+  }, 160);
+
+  function nnFrame() {
+    if (document.hidden) { requestAnimationFrame(nnFrame); return; }
+    ctx.clearRect(0, 0, W, H);
+    var rgb = getColorRGB();
+
+    // Draw connections
+    ctx.lineWidth = 0.7;
+    for (var i = 0; i < conns.length; i++) {
+      var c = conns[i];
+      var na = nodes[c.a], nb = nodes[c.b];
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(nb.x, nb.y);
+      ctx.strokeStyle = 'rgba(' + rgb + ',0.07)';
+      ctx.stroke();
+    }
+
+    // Draw nodes
+    for (var i = 0; i < nodes.length; i++) {
+      var nd = nodes[i];
+      var glow = nodeGlow[i];
+      nodeGlow[i] = Math.max(0, glow - 0.018);
+      var r = 2.5 + glow * 3;
+      if (glow > 0.05) {
+        var grad = ctx.createRadialGradient(nd.x, nd.y, 0, nd.x, nd.y, r * 4);
+        grad.addColorStop(0, 'rgba(' + rgb + ',' + (glow * 0.5) + ')');
+        grad.addColorStop(1, 'rgba(' + rgb + ',0)');
+        ctx.beginPath();
+        ctx.arc(nd.x, nd.y, r * 4, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+      ctx.beginPath();
+      ctx.arc(nd.x, nd.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + rgb + ',' + (0.25 + glow * 0.55) + ')';
+      ctx.fill();
+    }
+
+    // Update and draw pulses
+    var alive = [];
+    for (var i = 0; i < pulses.length; i++) {
+      var p = pulses[i];
+      p.t += p.speed;
+      if (p.t >= 1) {
+        // Activate destination node
+        var destIdx = p.fwd ? p.conn.b : p.conn.a;
+        nodeGlow[destIdx] = Math.min(1, nodeGlow[destIdx] + 0.9);
+        continue;
+      }
+      alive.push(p);
+      var na = nodes[p.conn.a], nb = nodes[p.conn.b];
+      var t = p.fwd ? p.t : 1 - p.t;
+      var px = na.x + (nb.x - na.x) * t;
+      var py = na.y + (nb.y - na.y) * t;
+
+      // Trail
+      var trailLen = 0.12;
+      var t0 = Math.max(0, t - trailLen);
+      var tx0 = na.x + (nb.x - na.x) * t0;
+      var ty0 = na.y + (nb.y - na.y) * t0;
+      var grad = ctx.createLinearGradient(tx0, ty0, px, py);
+      grad.addColorStop(0, 'rgba(' + rgb + ',0)');
+      grad.addColorStop(1, 'rgba(' + rgb + ',0.75)');
+      ctx.beginPath();
+      ctx.moveTo(tx0, ty0);
+      ctx.lineTo(px, py);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      // Pulse dot
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + rgb + ',0.9)';
+      ctx.fill();
+    }
+    pulses = alive;
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(nnFrame);
+  }
+  nnFrame();
 
   /* ---- 4. Active Nav Indicator ---- */
   var greedy = document.querySelector('.greedy-nav');
