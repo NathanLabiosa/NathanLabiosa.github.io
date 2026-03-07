@@ -8,6 +8,17 @@ Hi! I’m **Nathan Labiosa**, a graduate student at the **University of Southern
 
 I’m passionate about applying machine learning to **real-world, high-impact problems**—from healthcare to space systems—and thrive at the **intersection of research and engineering**.
 
+<div class="skill-tags">
+  <span class="skill-tag">Deep Learning</span>
+  <span class="skill-tag">Computer Vision</span>
+  <span class="skill-tag">NLP</span>
+  <span class="skill-tag">Reinforcement Learning</span>
+  <span class="skill-tag">Multimodal AI</span>
+  <span class="skill-tag">Neural Architectures</span>
+  <span class="skill-tag">ML Engineering</span>
+  <span class="skill-tag">Interpretable AI</span>
+</div>
+
 ## Research Interests
 
 - **Deep Learning & Neural Architectures** — designing and analyzing modern network architectures

@@ -16,6 +16,150 @@
     await mermaid.run({querySelector:'code.language-mermaid'});
 </script>
 
+<!-- Visual enhancements: Progress Bar, Typewriter, Particles, Nav Indicator, Skill Tags -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---- 1. Reading Progress Bar ---- */
+  var bar = document.createElement('div');
+  bar.id = 'reading-progress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', function () {
+    var scrolled = window.scrollY;
+    var total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+  }, { passive: true });
+
+  /* ---- 2. Typewriter Effect on author bio ---- */
+  var bioEl = document.querySelector('.author__bio');
+  if (bioEl) {
+    var fullText = bioEl.textContent.trim();
+    bioEl.textContent = '';
+    var cursor = document.createElement('span');
+    cursor.className = 'tw-cursor';
+    bioEl.appendChild(cursor);
+    var idx = 0;
+    function typeNext() {
+      if (idx < fullText.length) {
+        cursor.insertAdjacentText('beforebegin', fullText[idx++]);
+        setTimeout(typeNext, 26 + Math.random() * 22);
+      } else {
+        setTimeout(function () {
+          cursor.style.transition = 'opacity 0.6s';
+          cursor.style.opacity = '0';
+          setTimeout(function () { cursor.remove(); }, 600);
+        }, 1800);
+      }
+    }
+    setTimeout(typeNext, 700);
+  }
+
+  /* ---- 3. Particle Background ---- */
+  var canvas = document.createElement('canvas');
+  canvas.id = 'particle-canvas';
+  document.body.prepend(canvas);
+  var ctx = canvas.getContext('2d');
+  var W, H;
+  var NPARTICLES = 55, CONNECT = 120;
+  var pts = [];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  function mkPt() {
+    return { x: Math.random() * W, y: Math.random() * H,
+             vx: (Math.random() - 0.5) * 0.38, vy: (Math.random() - 0.5) * 0.38,
+             r: Math.random() * 1.1 + 0.4 };
+  }
+  for (var i = 0; i < NPARTICLES; i++) pts.push(mkPt());
+
+  function accentColor() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? '#818CF8' : '#4F46E5';
+  }
+
+  function frame() {
+    if (document.hidden) { requestAnimationFrame(frame); return; }
+    ctx.clearRect(0, 0, W, H);
+    var col = accentColor();
+    for (var a = 0; a < pts.length; a++) {
+      var p = pts[a];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.42;
+      ctx.fill();
+      for (var b = a + 1; b < pts.length; b++) {
+        var dx = p.x - pts[b].x, dy = p.y - pts[b].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < CONNECT) {
+          ctx.globalAlpha = (1 - d / CONNECT) * 0.13;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(pts[b].x, pts[b].y);
+          ctx.strokeStyle = col;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  frame();
+
+  /* ---- 4. Active Nav Indicator ---- */
+  var greedy = document.querySelector('.greedy-nav');
+  if (greedy) {
+    var ind = document.createElement('div');
+    ind.id = 'nav-indicator';
+    greedy.appendChild(ind);
+
+    var navLinks = Array.from(greedy.querySelectorAll(
+      '.visible-links .masthead__menu-item:not(.masthead__menu-item--lg):not(#theme-toggle) a'
+    ));
+
+    var currentPath = window.location.pathname;
+    var activeLink = navLinks.find(function (a) {
+      var h = a.getAttribute('href');
+      return h && (h === currentPath || (currentPath.length > 1 && currentPath.startsWith(h)));
+    }) || null;
+
+    function moveInd(linkEl, instant) {
+      var gr = greedy.getBoundingClientRect();
+      var lr = linkEl.getBoundingClientRect();
+      if (instant) ind.style.transition = 'none';
+      ind.style.left    = (lr.left - gr.left) + 'px';
+      ind.style.width   = lr.width + 'px';
+      ind.style.opacity = '1';
+      if (instant) requestAnimationFrame(function () { ind.style.transition = ''; });
+    }
+
+    function resetInd() {
+      if (activeLink) moveInd(activeLink);
+      else { ind.style.opacity = '0'; ind.style.width = '0'; }
+    }
+
+    if (activeLink) moveInd(activeLink, true);
+
+    navLinks.forEach(function (link) {
+      link.addEventListener('mouseenter', function () { moveInd(link); });
+    });
+    greedy.addEventListener('mouseleave', resetInd);
+  }
+
+  /* ---- 5. Skill Tag Toggle ---- */
+  document.querySelectorAll('.skill-tag').forEach(function (tag) {
+    tag.addEventListener('click', function () { tag.classList.toggle('is-active'); });
+  });
+
+})();
+</script>
+
 <!-- Scroll-spy Table of Contents with toggle button -->
 <script>
 (function () {

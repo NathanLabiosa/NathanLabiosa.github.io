@@ -132,6 +132,14 @@ html {
   animation-delay: 0s;
 }
 
+/* Pin the fixed sidebar to the top of the viewport so it doesn't
+   inherit the offset from #main's margin-top */
+@media screen and (min-width: 1024px) {
+  .sidebar {
+    top: 0 !important;
+  }
+}
+
 /* ---- Author Avatar ---- */
 /* Force the container to be the circle, image fills it.
    max-width:100% on the global img reset resolves to the 36px parent width
@@ -150,11 +158,31 @@ html {
   transition: box-shadow 0.35s ease, transform 0.35s ease !important;
 }
 
+@keyframes ringPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px #fff,
+      0 0 0 5px var(--accent-light),
+      0 8px 28px rgba(79, 70, 229, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px #fff,
+      0 0 0 10px rgba(129, 140, 248, 0.55),
+      0 8px 42px rgba(79, 70, 229, 0.45);
+  }
+}
+
+.author__avatar {
+  animation: ringPulse 3s ease-in-out infinite !important;
+}
+
 .author__avatar:hover {
+  animation: none !important;
   box-shadow:
     0 0 0 3px #fff,
-    0 0 0 5px var(--accent),
-    0 12px 36px rgba(79, 70, 229, 0.3);
+    0 0 0 8px var(--accent),
+    0 12px 36px rgba(79, 70, 229, 0.4) !important;
   transform: scale(1.04);
 }
 
@@ -359,13 +387,34 @@ html[data-theme="dark"] .custom-toc__link.is-active {
   text-decoration: none !important;
 }
 
-/* ---- Section headings ---- */
-.page__content h2 {
+/* ---- Section headings with animated gradient underline ---- */
+@keyframes gradientMove {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.page__content h2,
+.archive h2 {
   font-weight: 600 !important;
   letter-spacing: -0.02em;
-  border-bottom: 2px solid var(--accent-lighter) !important;
-  padding-bottom: 0.4em;
+  border-bottom: none !important;
+  padding-bottom: 0.65em;
   margin-top: 2em;
+  position: relative;
+}
+
+.page__content h2::after,
+.archive h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light), #C7D2FE, var(--accent));
+  background-size: 300% 100%;
+  animation: gradientMove 4s linear infinite;
+  border-radius: 2px;
 }
 
 .page__content h3 {
@@ -423,6 +472,111 @@ html[data-theme="dark"] .custom-toc__link.is-active {
   color: var(--accent-dark);
 }
 
+/* ---- Reading Progress Bar ---- */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light), #C7D2FE, var(--accent));
+  background-size: 300% 100%;
+  animation: gradientMove 2.5s linear infinite;
+  z-index: 9999;
+  border-radius: 0 2px 2px 0;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+/* ---- Skill Tags ---- */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.2rem 0 1.5rem;
+}
+
+.skill-tag {
+  display: inline-block;
+  padding: 0.28rem 0.85rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: rgba(79, 70, 229, 0.07);
+  border: 1.5px solid rgba(79, 70, 229, 0.22);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+}
+
+.skill-tag:hover,
+.skill-tag.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+/* ---- Active Nav Indicator ---- */
+#nav-indicator {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    left   0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    width  0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease;
+}
+
+.greedy-nav {
+  position: relative;
+}
+
+/* ---- Typewriter cursor ---- */
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ---- Particle Canvas ---- */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Ensure content layers sit above the particle canvas */
+.masthead       { z-index: 20 !important; }
+#main           { position: relative; z-index: 1; }
+.page__footer   { position: relative; z-index: 1; }
+.sidebar        { z-index: 5 !important; }
+#toc-toggle-btn { z-index: 50 !important; }
+#custom-toc     { z-index: 49 !important; }
+
 /* ==========================================================================
    DARK MODE OVERRIDES  (html[data-theme="dark"])
    ========================================================================== */
@@ -443,20 +597,6 @@ html[data-theme="dark"] .masthead {
   box-shadow: 0 1px 0 rgba(129, 140, 248, 0.15), 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
-html[data-theme="dark"] .author__avatar img {
-  box-shadow:
-    0 0 0 3px #1e1b4b,
-    0 0 0 5px var(--accent-light),
-    0 8px 28px rgba(129, 140, 248, 0.25);
-}
-
-html[data-theme="dark"] .author__avatar img:hover {
-  box-shadow:
-    0 0 0 3px #1e1b4b,
-    0 0 0 5px var(--accent),
-    0 12px 36px rgba(129, 140, 248, 0.35);
-}
-
 html[data-theme="dark"] .page__title,
 html[data-theme="dark"] .author__name {
   color: #F1F5F9 !important;
@@ -466,12 +606,21 @@ html[data-theme="dark"] .masthead__menu-item--lg a {
   color: #F1F5F9 !important;
 }
 
-html[data-theme="dark"] .page__content h2 {
-  border-bottom-color: rgba(129, 140, 248, 0.25) !important;
-}
-
 html[data-theme="dark"] .page__content h3 {
   color: var(--accent-dark);
+}
+
+html[data-theme="dark"] .skill-tag {
+  color: var(--accent-light);
+  background: rgba(129, 140, 248, 0.1);
+  border-color: rgba(129, 140, 248, 0.25);
+}
+
+html[data-theme="dark"] .skill-tag:hover,
+html[data-theme="dark"] .skill-tag.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
 html[data-theme="dark"] ::selection {
