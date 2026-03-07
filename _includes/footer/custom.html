@@ -55,143 +55,89 @@
     setTimeout(typeNext, 700);
   }
 
-  /* ---- 3. Neural Network Background ---- */
+  /* ---- 3. Gradient Descent Topology ---- */
   var canvas = document.createElement('canvas');
   canvas.id = 'particle-canvas';
   document.body.prepend(canvas);
   var ctx = canvas.getContext('2d');
   var W, H;
-  var LAYERS = [3, 5, 7, 7, 5, 3];
-  var nodes = [], conns = [], pulses = [], nodeGlow = [];
+  var GRID = 34;
+  var mesh = []; // mesh[j][i] = { sx, sy, gx, gy }
+  var clock = 0;
 
-  function getColorRGB() {
-    return document.documentElement.getAttribute('data-theme') === 'dark' ? '129,140,248' : '79,70,229';
+  function loss(x, y) {
+    return Math.sin(x * 1.2) * Math.cos(y * 1.0) * 0.6
+         + Math.cos(x * 0.8) * Math.sin(y * 0.9) * 0.4
+         + 0.016 * (x * x + y * y);
+  }
+
+  function project(gx, gy, gz) {
+    var sc  = Math.min(W, H) * 0.076;
+    var scz = Math.min(W, H) * 0.10;
+    return {
+      sx: W * 0.5  + (gx - gy) * 0.866 * sc,
+      sy: H * 0.54 + (gx + gy) * 0.5   * sc - gz * scz
+    };
   }
 
   function build() {
-    nodes = []; conns = []; nodeGlow = [];
-    var marginX = W * 0.12, marginY = H * 0.12;
-    var usableW = W - marginX * 2, usableH = H - marginY * 2;
-    for (var l = 0; l < LAYERS.length; l++) {
-      var count = LAYERS[l];
-      var x = marginX + (l / (LAYERS.length - 1)) * usableW;
-      for (var n = 0; n < count; n++) {
-        var y = marginY + (count === 1 ? usableH / 2 : (n / (count - 1)) * usableH);
-        nodes.push({ x: x, y: y, layer: l, idx: n });
-        nodeGlow.push(0);
+    mesh = [];
+    for (var j = 0; j <= GRID; j++) {
+      var row = [];
+      for (var i = 0; i <= GRID; i++) {
+        var gx = (i / GRID - 0.5) * 6;
+        var gy = (j / GRID - 0.5) * 6;
+        var p  = project(gx, gy, loss(gx, gy));
+        row.push({ sx: p.sx, sy: p.sy, gx: gx, gy: gy });
       }
-    }
-    // Build connections between adjacent layers
-    for (var l = 0; l < LAYERS.length - 1; l++) {
-      var aStart = 0, bStart = 0;
-      for (var ll = 0; ll < l; ll++) aStart += LAYERS[ll];
-      for (var ll = 0; ll <= l; ll++) bStart += LAYERS[ll];
-      for (var a = 0; a < LAYERS[l]; a++) {
-        for (var b = 0; b < LAYERS[l + 1]; b++) {
-          conns.push({ a: aStart + a, b: bStart + b });
-        }
-      }
+      mesh.push(row);
     }
   }
 
   function resize() {
-    W = canvas.width = window.innerWidth;
+    W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
     build();
   }
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  // Spawn pulses periodically
-  setInterval(function () {
-    if (conns.length === 0) return;
-    var c = conns[Math.floor(Math.random() * conns.length)];
-    // ~50% chance to travel forward, 50% backward for variety
-    var forward = Math.random() > 0.5;
-    pulses.push({ conn: c, t: 0, speed: 0.008 + Math.random() * 0.006, fwd: forward });
-  }, 160);
-
-  function nnFrame() {
-    if (document.hidden) { requestAnimationFrame(nnFrame); return; }
-    ctx.clearRect(0, 0, W, H);
-    var rgb = getColorRGB();
-
-    // Draw connections
-    ctx.lineWidth = 0.7;
-    for (var i = 0; i < conns.length; i++) {
-      var c = conns[i];
-      var na = nodes[c.a], nb = nodes[c.b];
-      ctx.beginPath();
-      ctx.moveTo(na.x, na.y);
-      ctx.lineTo(nb.x, nb.y);
-      ctx.strokeStyle = 'rgba(' + rgb + ',0.07)';
-      ctx.stroke();
-    }
-
-    // Draw nodes
-    for (var i = 0; i < nodes.length; i++) {
-      var nd = nodes[i];
-      var glow = nodeGlow[i];
-      nodeGlow[i] = Math.max(0, glow - 0.018);
-      var r = 2.5 + glow * 3;
-      if (glow > 0.05) {
-        var grad = ctx.createRadialGradient(nd.x, nd.y, 0, nd.x, nd.y, r * 4);
-        grad.addColorStop(0, 'rgba(' + rgb + ',' + (glow * 0.5) + ')');
-        grad.addColorStop(1, 'rgba(' + rgb + ',0)');
-        ctx.beginPath();
-        ctx.arc(nd.x, nd.y, r * 4, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-      }
-      ctx.beginPath();
-      ctx.arc(nd.x, nd.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + rgb + ',' + (0.25 + glow * 0.55) + ')';
-      ctx.fill();
-    }
-
-    // Update and draw pulses
-    var alive = [];
-    for (var i = 0; i < pulses.length; i++) {
-      var p = pulses[i];
-      p.t += p.speed;
-      if (p.t >= 1) {
-        // Activate destination node
-        var destIdx = p.fwd ? p.conn.b : p.conn.a;
-        nodeGlow[destIdx] = Math.min(1, nodeGlow[destIdx] + 0.9);
-        continue;
-      }
-      alive.push(p);
-      var na = nodes[p.conn.a], nb = nodes[p.conn.b];
-      var t = p.fwd ? p.t : 1 - p.t;
-      var px = na.x + (nb.x - na.x) * t;
-      var py = na.y + (nb.y - na.y) * t;
-
-      // Trail
-      var trailLen = 0.12;
-      var t0 = Math.max(0, t - trailLen);
-      var tx0 = na.x + (nb.x - na.x) * t0;
-      var ty0 = na.y + (nb.y - na.y) * t0;
-      var grad = ctx.createLinearGradient(tx0, ty0, px, py);
-      grad.addColorStop(0, 'rgba(' + rgb + ',0)');
-      grad.addColorStop(1, 'rgba(' + rgb + ',0.75)');
-      ctx.beginPath();
-      ctx.moveTo(tx0, ty0);
-      ctx.lineTo(px, py);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.4;
-      ctx.stroke();
-
-      // Pulse dot
-      ctx.beginPath();
-      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + rgb + ',0.9)';
-      ctx.fill();
-    }
-    pulses = alive;
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(nnFrame);
+  function getRGB() {
+    return document.documentElement.getAttribute('data-theme') === 'dark'
+      ? '129,140,248' : '79,70,229';
   }
-  nnFrame();
+
+  function seg(p1, p2, lx, ly, rgb) {
+    var mx = (p1.gx + p2.gx) * 0.5, my = (p1.gy + p2.gy) * 0.5;
+    var d2 = (mx - lx) * (mx - lx) + (my - ly) * (my - ly);
+    var g  = Math.exp(-d2 * 0.22);          // spotlight falloff
+    ctx.beginPath();
+    ctx.moveTo(p1.sx, p1.sy);
+    ctx.lineTo(p2.sx, p2.sy);
+    ctx.strokeStyle = 'rgba(' + rgb + ',' + (0.045 + g * 0.32) + ')';
+    ctx.lineWidth   = 0.4 + g * 1.0;
+    ctx.stroke();
+  }
+
+  function topoFrame() {
+    if (document.hidden) { requestAnimationFrame(topoFrame); return; }
+    clock += 0.0035;
+    ctx.clearRect(0, 0, W, H);
+    var rgb = getRGB();
+
+    // Slow Lissajous sweep in grid space
+    var lx = 2.6 * Math.cos(clock * 0.55);
+    var ly = 2.6 * Math.sin(clock * 0.37);
+
+    for (var j = 0; j <= GRID; j++) {
+      for (var i = 0; i <= GRID; i++) {
+        if (i < GRID) seg(mesh[j][i], mesh[j][i + 1], lx, ly, rgb); // row edge
+        if (j < GRID) seg(mesh[j][i], mesh[j + 1][i], lx, ly, rgb); // col edge
+      }
+    }
+    requestAnimationFrame(topoFrame);
+  }
+  topoFrame();
 
   /* ---- 4. Active Nav Indicator ---- */
   var greedy = document.querySelector('.greedy-nav');
