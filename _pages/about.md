@@ -29,5 +29,5 @@ I’m passionate about applying machine learning to **real-world, high-impact pr
 
 ## Documents
 
-- [Resume (PDF)](/files/NathanLabiosa_ML_Resume_2025.pdf)
+- [Resume (PDF)](/files/NathanLabiosa_ML_Resume_2026.pdf)
 - [Full CV (PDF)](/files/NathanLabiosa_CV_2025.pdf)
