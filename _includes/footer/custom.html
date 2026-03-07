@@ -61,7 +61,7 @@
   document.body.prepend(canvas);
   var ctx = canvas.getContext('2d');
   var W, H;
-  var GRID = 34;
+  var GRID = 46;
   var mesh = []; // mesh[j][i] = { sx, sy, gx, gy }
   var clock = 0;
 
@@ -72,8 +72,8 @@
   }
 
   function project(gx, gy, gz) {
-    var sc  = Math.min(W, H) * 0.076;
-    var scz = Math.min(W, H) * 0.10;
+    var sc  = Math.min(W, H) * 0.098;
+    var scz = Math.min(W, H) * 0.13;
     return {
       sx: W * 0.5  + (gx - gy) * 0.866 * sc,
       sy: H * 0.54 + (gx + gy) * 0.5   * sc - gz * scz
@@ -85,8 +85,8 @@
     for (var j = 0; j <= GRID; j++) {
       var row = [];
       for (var i = 0; i <= GRID; i++) {
-        var gx = (i / GRID - 0.5) * 6;
-        var gy = (j / GRID - 0.5) * 6;
+        var gx = (i / GRID - 0.5) * 7;
+        var gy = (j / GRID - 0.5) * 7;
         var p  = project(gx, gy, loss(gx, gy));
         row.push({ sx: p.sx, sy: p.sy, gx: gx, gy: gy });
       }
