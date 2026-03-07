@@ -14,4 +14,470 @@
 <link rel="icon" href="/images/favicon.ico"/>
 <meta name="theme-color" content="#ffffff"/>
 
+<!-- Google Fonts: Inter (modern, professional sans-serif) + Fira Code -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+
+<style>
+/* ==========================================================================
+   CUSTOM VISUAL ENHANCEMENTS
+   ========================================================================== */
+
+/* ---- CSS Custom Properties (Light Mode) ---- */
+:root {
+  --accent:           #4F46E5;
+  --accent-light:     #818CF8;
+  --accent-lighter:   #C7D2FE;
+  --accent-dark:      #3730A3;
+
+  --global-link-color:         #4F46E5;
+  --global-link-color-hover:   #3730A3;
+  --global-link-color-visited: #6366F1;
+
+  --global-bg-color:          #FAFAFA;
+  --global-footer-bg-color:   #F1F5F9;
+  --global-border-color:      #E2E8F0;
+  --global-text-color:        #1E293B;
+  --global-text-color-light:  #64748B;
+}
+
+/* ---- Typography ---- */
+body,
+.author__bio,
+.author__urls,
+.page__content p,
+.page__content li {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+tt, code, kbd, samp, pre {
+  font-family: 'Fira Code', Monaco, Consolas, 'Lucida Console', monospace !important;
+  font-size: 0.9em;
+}
+
+h1, h2, h3, h4, h5, h6,
+.author__name,
+.masthead__menu-item--lg a {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* ---- Smooth scrolling ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Masthead / Navbar ---- */
+.masthead {
+  background: rgba(250, 250, 250, 0.82) !important;
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(79, 70, 229, 0.1), 0 2px 20px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.masthead::after {
+  display: none !important;
+}
+
+.greedy-nav {
+  background: transparent !important;
+}
+
+.masthead__menu-item {
+  background-color: transparent !important;
+}
+
+.masthead__menu-item--lg a {
+  font-weight: 700 !important;
+  color: #1E293B !important;
+}
+
+/* Nav link hover color */
+.greedy-nav a:hover {
+  color: var(--accent) !important;
+}
+
+/* Nav link underline animation with accent color */
+.greedy-nav .visible-links a::before {
+  background: var(--accent) !important;
+  height: 2px !important;
+  border-radius: 2px;
+}
+
+/* ---- Page entrance animation ---- */
+#main {
+  animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.08s;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0s;
+}
+
+/* ---- Author Avatar ---- */
+/* Force the container to be the circle, image fills it.
+   max-width:100% on the global img reset resolves to the 36px parent width
+   and beats width:160px even with !important — so we must fix both. */
+.author__avatar {
+  display: block !important;
+  width: 160px !important;
+  height: 160px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  margin-left: 10px !important;
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 5px var(--accent-light),
+    0 8px 28px rgba(79, 70, 229, 0.2);
+  transition: box-shadow 0.35s ease, transform 0.35s ease !important;
+}
+
+.author__avatar:hover {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 5px var(--accent),
+    0 12px 36px rgba(79, 70, 229, 0.3);
+  transform: scale(1.04);
+}
+
+.author__avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+/* ---- Author info ---- */
+.author__name {
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+.author__bio {
+  font-size: 0.78rem !important;
+  line-height: 1.65 !important;
+  color: #475569 !important;
+}
+
+/* ---- Sidebar social links ---- */
+/* Allow long text like "University of Southern California" to wrap */
+.author__urls li,
+.author__desktop {
+  white-space: normal !important;
+  word-break: break-word;
+}
+
+.author__urls a {
+  text-decoration: none !important;
+  transition: color 0.2s ease, transform 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  white-space: normal !important;
+}
+
+.author__urls a:hover {
+  color: var(--accent) !important;
+  text-decoration: none !important;
+}
+
+.author__urls li:hover .fas,
+.author__urls li:hover .fab,
+.author__urls li:hover .ai {
+  color: var(--accent) !important;
+}
+
+/* ---- Floating scroll-spy TOC (toggle button approach) ---- */
+
+/* Toggle button — always visible on the right edge when headings exist */
+#toc-toggle-btn {
+  display: none; /* shown via JS when headings found */
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  padding: 0.75rem 0.45rem;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  box-shadow: -2px 0 12px rgba(79, 70, 229, 0.25);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+#toc-toggle-btn:hover {
+  background: var(--accent-dark);
+  box-shadow: -3px 0 18px rgba(79, 70, 229, 0.35);
+}
+
+/* TOC panel — slides in from right */
+#custom-toc {
+  position: fixed;
+  top: 80px;
+  right: -230px; /* hidden off-screen */
+  width: 210px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  z-index: 49;
+  padding: 1rem 1.1rem;
+  background: rgba(250, 250, 250, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--accent-lighter);
+  border-radius: 12px 0 0 12px;
+  box-shadow: -4px 0 28px rgba(79, 70, 229, 0.1);
+  transition: right 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#custom-toc.is-open {
+  right: 0;
+}
+
+.custom-toc__title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--global-text-color-light);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--accent-lighter);
+}
+
+.custom-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-toc__item {
+  margin: 0;
+  padding: 0;
+}
+
+.custom-toc__item--sub {
+  padding-left: 0.7rem;
+}
+
+.custom-toc__link {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.74rem;
+  color: var(--global-text-color-light);
+  text-decoration: none !important;
+  border: none !important;
+  border-left: 2px solid transparent !important;
+  border-radius: 4px;
+  line-height: 1.45;
+  transition: color 0.2s ease, border-left-color 0.2s ease, background 0.2s ease !important;
+}
+
+.custom-toc__link:hover {
+  color: var(--accent) !important;
+  border-left-color: var(--accent-light) !important;
+  background: rgba(79, 70, 229, 0.05);
+}
+
+.custom-toc__link.is-active {
+  color: var(--accent) !important;
+  border-left-color: var(--accent) !important;
+  font-weight: 600;
+  background: rgba(79, 70, 229, 0.07);
+}
+
+/* Dark mode TOC */
+html[data-theme="dark"] #toc-toggle-btn {
+  background: var(--accent);
+}
+
+html[data-theme="dark"] #custom-toc {
+  background: rgba(20, 17, 60, 0.96);
+  border-color: rgba(129, 140, 248, 0.2);
+  box-shadow: -4px 0 28px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .custom-toc__link:hover {
+  background: rgba(129, 140, 248, 0.1);
+}
+
+html[data-theme="dark"] .custom-toc__link.is-active {
+  background: rgba(129, 140, 248, 0.12);
+}
+
+/* ---- Page title ---- */
+.page__title {
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  color: #0F172A !important;
+}
+
+/* ---- Page content links ---- */
+.page__content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--accent-lighter);
+  transition: color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.page__content a:hover {
+  color: var(--accent-dark) !important;
+  border-bottom-color: var(--accent-dark);
+  text-decoration: none !important;
+}
+
+/* ---- Section headings ---- */
+.page__content h2 {
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid var(--accent-lighter) !important;
+  padding-bottom: 0.4em;
+  margin-top: 2em;
+}
+
+.page__content h3 {
+  font-weight: 600 !important;
+  color: var(--accent-dark);
+}
+
+/* ---- Buttons ---- */
+.btn {
+  border-radius: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  transition: all 0.22s ease !important;
+}
+
+.btn--inverse {
+  border: 1.5px solid var(--accent) !important;
+  color: var(--accent) !important;
+  background: transparent !important;
+}
+
+.btn--inverse:hover {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.28);
+  transform: translateY(-1px);
+}
+
+/* ---- Publication / Archive items ---- */
+.archive__item-title {
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.archive__item-title a {
+  color: #1E293B !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  transition: color 0.2s ease !important;
+}
+
+.archive__item-title a:hover {
+  color: var(--accent) !important;
+}
+
+/* ---- Footer ---- */
+.page__footer {
+  border-top: 1px solid rgba(79, 70, 229, 0.12) !important;
+}
+
+/* ---- Selection color ---- */
+::selection {
+  background: var(--accent-lighter);
+  color: var(--accent-dark);
+}
+
+/* ==========================================================================
+   DARK MODE OVERRIDES  (html[data-theme="dark"])
+   ========================================================================== */
+
+html[data-theme="dark"] {
+  --accent:           #818CF8;
+  --accent-light:     #A5B4FC;
+  --accent-lighter:   rgba(129, 140, 248, 0.2);
+  --accent-dark:      #C7D2FE;
+
+  --global-link-color:         #818CF8;
+  --global-link-color-hover:   #A5B4FC;
+  --global-link-color-visited: #A5B4FC;
+}
+
+html[data-theme="dark"] .masthead {
+  background: rgba(30, 27, 75, 0.85) !important;
+  box-shadow: 0 1px 0 rgba(129, 140, 248, 0.15), 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .author__avatar img {
+  box-shadow:
+    0 0 0 3px #1e1b4b,
+    0 0 0 5px var(--accent-light),
+    0 8px 28px rgba(129, 140, 248, 0.25);
+}
+
+html[data-theme="dark"] .author__avatar img:hover {
+  box-shadow:
+    0 0 0 3px #1e1b4b,
+    0 0 0 5px var(--accent),
+    0 12px 36px rgba(129, 140, 248, 0.35);
+}
+
+html[data-theme="dark"] .page__title,
+html[data-theme="dark"] .author__name {
+  color: #F1F5F9 !important;
+}
+
+html[data-theme="dark"] .masthead__menu-item--lg a {
+  color: #F1F5F9 !important;
+}
+
+html[data-theme="dark"] .page__content h2 {
+  border-bottom-color: rgba(129, 140, 248, 0.25) !important;
+}
+
+html[data-theme="dark"] .page__content h3 {
+  color: var(--accent-dark);
+}
+
+html[data-theme="dark"] ::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: #F1F5F9;
+}
+</style>
+
 <!-- end custom head snippets -->
