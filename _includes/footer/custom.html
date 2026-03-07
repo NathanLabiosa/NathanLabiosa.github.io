@@ -62,7 +62,7 @@
   var ctx = canvas.getContext('2d');
   var W, H;
   var GRID = 46;
-  var mesh = []; // mesh[j][i] = { sx, sy, gx, gy }
+  var mesh = [];
   var clock = 0;
 
   function loss(x, y) {
@@ -110,7 +110,7 @@
   function seg(p1, p2, lx, ly, rgb) {
     var mx = (p1.gx + p2.gx) * 0.5, my = (p1.gy + p2.gy) * 0.5;
     var d2 = (mx - lx) * (mx - lx) + (my - ly) * (my - ly);
-    var g  = Math.exp(-d2 * 0.22);          // spotlight falloff
+    var g  = Math.exp(-d2 * 0.22);
     ctx.beginPath();
     ctx.moveTo(p1.sx, p1.sy);
     ctx.lineTo(p2.sx, p2.sy);
@@ -125,14 +125,13 @@
     ctx.clearRect(0, 0, W, H);
     var rgb = getRGB();
 
-    // Slow Lissajous sweep in grid space
     var lx = 2.6 * Math.cos(clock * 0.55);
     var ly = 2.6 * Math.sin(clock * 0.37);
 
     for (var j = 0; j <= GRID; j++) {
       for (var i = 0; i <= GRID; i++) {
-        if (i < GRID) seg(mesh[j][i], mesh[j][i + 1], lx, ly, rgb); // row edge
-        if (j < GRID) seg(mesh[j][i], mesh[j + 1][i], lx, ly, rgb); // col edge
+        if (i < GRID) seg(mesh[j][i], mesh[j][i + 1], lx, ly, rgb);
+        if (j < GRID) seg(mesh[j][i], mesh[j + 1][i], lx, ly, rgb);
       }
     }
     requestAnimationFrame(topoFrame);
@@ -194,7 +193,6 @@
     var headings = document.querySelectorAll('.page__content h2, .page__content h3, .archive h2, .archive h3');
     if (headings.length < 2) return;
 
-    // --- Build panel ---
     var toc = document.createElement('nav');
     toc.id = 'custom-toc';
     toc.setAttribute('aria-label', 'On this page');
@@ -233,7 +231,6 @@
     toc.appendChild(list);
     document.body.appendChild(toc);
 
-    // --- Build toggle button ---
     var btn = document.createElement('button');
     btn.id = 'toc-toggle-btn';
     btn.setAttribute('aria-label', 'Toggle table of contents');
@@ -245,14 +242,12 @@
       toc.classList.toggle('is-open');
     });
 
-    // Close panel when clicking outside
     document.addEventListener('click', function (e) {
       if (!toc.contains(e.target) && e.target !== btn) {
         toc.classList.remove('is-open');
       }
     });
 
-    // --- Scroll-spy ---
     var links = toc.querySelectorAll('.custom-toc__link');
 
     var observer = new IntersectionObserver(function (entries) {
