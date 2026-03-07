@@ -178,9 +178,144 @@
     greedy.addEventListener('mouseleave', resetInd);
   }
 
-  /* ---- 5. Skill Tag Toggle ---- */
+  /* ---- 5. Skill Tag Toggle with per-tag effects ---- */
+  function fxNeuralPulse(el) {
+    var rect = el.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+    for (var i = 0; i < 3; i++) {
+      (function(d) {
+        setTimeout(function() {
+          var r = document.createElement('div');
+          r.style.cssText = 'position:fixed;left:'+cx+'px;top:'+cy+'px;width:60px;height:60px;' +
+            'border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9000;' +
+            'animation:skillRing 0.75s ease-out forwards;';
+          document.body.appendChild(r);
+          setTimeout(function(){r.remove();}, 800);
+        }, d * 200);
+      })(i);
+    }
+  }
+
+  function fxScanLine() {
+    var line = document.createElement('div');
+    line.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:3px;pointer-events:none;z-index:9000;' +
+      'background:linear-gradient(90deg,transparent,var(--accent),var(--accent-light),var(--accent),transparent);' +
+      'animation:skillScan 0.9s linear forwards;';
+    document.body.appendChild(line);
+    setTimeout(function(){line.remove();}, 950);
+  }
+
+  function fxTokens(el) {
+    var rect = el.getBoundingClientRect();
+    var words = ['token','embed','\u03a3','attend','softmax'];
+    words.forEach(function(w, i) {
+      setTimeout(function() {
+        var t = document.createElement('span');
+        t.textContent = w;
+        t.style.cssText = 'position:fixed;left:'+(rect.left + rect.width/2 + (i-2)*32)+'px;top:'+(rect.top-4)+'px;' +
+          'font-size:11px;font-family:monospace;color:var(--accent);pointer-events:none;z-index:9000;' +
+          'animation:skillFloat 1s ease-out forwards;';
+        document.body.appendChild(t);
+        setTimeout(function(){t.remove();}, 1050);
+      }, i * 90);
+    });
+  }
+
+  function fxFusion(el) {
+    var rect = el.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+    [-50, 50].forEach(function(ox, i) {
+      var orb = document.createElement('div');
+      orb.style.cssText = 'position:fixed;left:'+(cx+ox)+'px;top:'+cy+'px;width:10px;height:10px;' +
+        'border-radius:50%;background:'+(i===0 ? 'var(--accent)' : 'var(--accent-light)')+';' +
+        'transform:translate(-50%,-50%);pointer-events:none;z-index:9000;' +
+        'transition:left 0.35s ease-in,opacity 0.35s ease-in;';
+      document.body.appendChild(orb);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){
+        orb.style.left = cx+'px'; orb.style.opacity = '0';
+      });});
+      setTimeout(function(){orb.remove();}, 420);
+    });
+    setTimeout(function() {
+      var flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;left:'+cx+'px;top:'+cy+'px;width:50px;height:50px;' +
+        'border-radius:50%;pointer-events:none;z-index:9000;' +
+        'background:radial-gradient(circle,rgba(129,140,248,0.8),transparent);' +
+        'animation:skillRing 0.5s ease-out forwards;';
+      document.body.appendChild(flash);
+      setTimeout(function(){flash.remove();}, 560);
+    }, 330);
+  }
+
+  function fxTerminal(el) {
+    var rect = el.getBoundingClientRect();
+    var left = Math.min(rect.left, window.innerWidth - 215);
+    var term = document.createElement('div');
+    term.style.cssText = 'position:fixed;left:'+left+'px;top:'+(rect.bottom+8)+'px;' +
+      'background:#0f172a;color:#4ade80;font-family:monospace;font-size:11px;' +
+      'padding:8px 12px;border-radius:6px;pointer-events:none;z-index:9000;white-space:pre;' +
+      'animation:skillTermFade 2.4s ease forwards;';
+    term.textContent = '$ train --epochs 100\n[\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588] 100%  loss: 0.042';
+    document.body.appendChild(term);
+    setTimeout(function(){term.remove();}, 2500);
+  }
+
+  function fxTrajectory(el) {
+    var rect = el.getBoundingClientRect();
+    var sx = rect.left + rect.width/2, sy = rect.top + rect.height/2;
+    var ex = sx + 180, ey = sy - 70;
+    var cp1x = sx+55, cp1y = sy-95, cp2x = ex-55, cp2y = ey+55;
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns,'svg');
+    svg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9000;';
+    var pathEl = document.createElementNS(ns,'path');
+    pathEl.setAttribute('d','M'+sx+' '+sy+' C'+cp1x+' '+cp1y+','+cp2x+' '+cp2y+','+ex+' '+ey);
+    pathEl.setAttribute('stroke','var(--accent)');
+    pathEl.setAttribute('stroke-width','1.5');
+    pathEl.setAttribute('fill','none');
+    pathEl.setAttribute('stroke-dasharray','5 4');
+    pathEl.setAttribute('opacity','0.7');
+    var dotEl = document.createElementNS(ns,'circle');
+    dotEl.setAttribute('r','4');
+    dotEl.setAttribute('fill','var(--accent)');
+    svg.appendChild(pathEl);
+    svg.appendChild(dotEl);
+    document.body.appendChild(svg);
+    var start = null;
+    function animTraj(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / 900, 1), mp = 1-p;
+      dotEl.setAttribute('cx', mp*mp*mp*sx + 3*mp*mp*p*cp1x + 3*mp*p*p*cp2x + p*p*p*ex);
+      dotEl.setAttribute('cy', mp*mp*mp*sy + 3*mp*mp*p*cp1y + 3*mp*p*p*cp2y + p*p*p*ey);
+      if (p < 1) { requestAnimationFrame(animTraj); }
+      else {
+        setTimeout(function(){
+          svg.style.transition='opacity 0.4s';
+          svg.style.opacity='0';
+          setTimeout(function(){svg.remove();},450);
+        }, 350);
+      }
+    }
+    requestAnimationFrame(animTraj);
+  }
+
+  var tagFX = {
+    'Deep Learning':  fxNeuralPulse,
+    'Computer Vision': fxScanLine,
+    'NLP':            fxTokens,
+    'Multimodal AI':  fxFusion,
+    'ML Engineering': fxTerminal,
+    'Robotics':       fxTrajectory
+  };
+
   document.querySelectorAll('.skill-tag').forEach(function (tag) {
-    tag.addEventListener('click', function () { tag.classList.toggle('is-active'); });
+    tag.addEventListener('click', function () {
+      tag.classList.toggle('is-active');
+      if (tag.classList.contains('is-active')) {
+        var fn = tagFX[tag.textContent.trim()];
+        if (fn) fn(tag);
+      }
+    });
   });
 
 })();

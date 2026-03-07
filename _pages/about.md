@@ -12,20 +12,17 @@ I’m passionate about applying machine learning to **real-world, high-impact pr
   <span class="skill-tag">Deep Learning</span>
   <span class="skill-tag">Computer Vision</span>
   <span class="skill-tag">NLP</span>
-  <span class="skill-tag">Reinforcement Learning</span>
   <span class="skill-tag">Multimodal AI</span>
-  <span class="skill-tag">Neural Architectures</span>
   <span class="skill-tag">ML Engineering</span>
-  <span class="skill-tag">Interpretable AI</span>
+  <span class="skill-tag">Robotics</span>
 </div>
 
 ## Research Interests
 
-- **Deep Learning & Neural Architectures** — designing and analyzing modern network architectures
 - **Computer Vision** — perception, scene understanding, and visual representation learning
 - **Natural Language Processing** — language models, semantics, and grounded language understanding
-- **Reinforcement Learning** — decision-making, exploration, and policy optimization
 - **Multimodal Systems** — bridging vision, language, and other modalities
+- **Robotics** — generalizable control policies, sim-to-real transfer, and VLA models
 
 ## Documents
 
