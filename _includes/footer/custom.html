@@ -178,143 +178,152 @@
     greedy.addEventListener('mouseleave', resetInd);
   }
 
-  /* ---- 5. Skill Tag Toggle with per-tag effects ---- */
-  function fxNeuralPulse(el) {
-    var rect = el.getBoundingClientRect();
-    var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-    for (var i = 0; i < 3; i++) {
-      (function(d) {
-        setTimeout(function() {
-          var r = document.createElement('div');
-          r.style.cssText = 'position:fixed;left:'+cx+'px;top:'+cy+'px;width:60px;height:60px;' +
-            'border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9000;' +
-            'animation:skillRing 0.75s ease-out forwards;';
-          document.body.appendChild(r);
-          setTimeout(function(){r.remove();}, 800);
-        }, d * 200);
-      })(i);
-    }
-  }
-
-  function fxScanLine() {
-    var line = document.createElement('div');
-    line.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:3px;pointer-events:none;z-index:9000;' +
-      'background:linear-gradient(90deg,transparent,var(--accent),var(--accent-light),var(--accent),transparent);' +
-      'animation:skillScan 0.9s linear forwards;';
-    document.body.appendChild(line);
-    setTimeout(function(){line.remove();}, 950);
-  }
-
-  function fxTokens(el) {
-    var rect = el.getBoundingClientRect();
-    var words = ['token','embed','\u03a3','attend','softmax'];
-    words.forEach(function(w, i) {
-      setTimeout(function() {
-        var t = document.createElement('span');
-        t.textContent = w;
-        t.style.cssText = 'position:fixed;left:'+(rect.left + rect.width/2 + (i-2)*32)+'px;top:'+(rect.top-4)+'px;' +
-          'font-size:11px;font-family:monospace;color:var(--accent);pointer-events:none;z-index:9000;' +
-          'animation:skillFloat 1s ease-out forwards;';
-        document.body.appendChild(t);
-        setTimeout(function(){t.remove();}, 1050);
-      }, i * 90);
-    });
-  }
-
-  function fxFusion(el) {
-    var rect = el.getBoundingClientRect();
-    var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-    [-50, 50].forEach(function(ox, i) {
-      var orb = document.createElement('div');
-      orb.style.cssText = 'position:fixed;left:'+(cx+ox)+'px;top:'+cy+'px;width:10px;height:10px;' +
-        'border-radius:50%;background:'+(i===0 ? 'var(--accent)' : 'var(--accent-light)')+';' +
-        'transform:translate(-50%,-50%);pointer-events:none;z-index:9000;' +
-        'transition:left 0.35s ease-in,opacity 0.35s ease-in;';
-      document.body.appendChild(orb);
-      requestAnimationFrame(function(){requestAnimationFrame(function(){
-        orb.style.left = cx+'px'; orb.style.opacity = '0';
-      });});
-      setTimeout(function(){orb.remove();}, 420);
-    });
-    setTimeout(function() {
-      var flash = document.createElement('div');
-      flash.style.cssText = 'position:fixed;left:'+cx+'px;top:'+cy+'px;width:50px;height:50px;' +
-        'border-radius:50%;pointer-events:none;z-index:9000;' +
-        'background:radial-gradient(circle,rgba(129,140,248,0.8),transparent);' +
-        'animation:skillRing 0.5s ease-out forwards;';
-      document.body.appendChild(flash);
-      setTimeout(function(){flash.remove();}, 560);
-    }, 330);
-  }
-
-  function fxTerminal(el) {
-    var rect = el.getBoundingClientRect();
-    var left = Math.min(rect.left, window.innerWidth - 215);
-    var term = document.createElement('div');
-    term.style.cssText = 'position:fixed;left:'+left+'px;top:'+(rect.bottom+8)+'px;' +
-      'background:#0f172a;color:#4ade80;font-family:monospace;font-size:11px;' +
-      'padding:8px 12px;border-radius:6px;pointer-events:none;z-index:9000;white-space:pre;' +
-      'animation:skillTermFade 2.4s ease forwards;';
-    term.textContent = '$ train --epochs 100\n[\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588] 100%  loss: 0.042';
-    document.body.appendChild(term);
-    setTimeout(function(){term.remove();}, 2500);
-  }
-
-  function fxTrajectory(el) {
-    var rect = el.getBoundingClientRect();
-    var sx = rect.left + rect.width/2, sy = rect.top + rect.height/2;
-    var ex = sx + 180, ey = sy - 70;
-    var cp1x = sx+55, cp1y = sy-95, cp2x = ex-55, cp2y = ey+55;
-    var ns = 'http://www.w3.org/2000/svg';
-    var svg = document.createElementNS(ns,'svg');
-    svg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9000;';
-    var pathEl = document.createElementNS(ns,'path');
-    pathEl.setAttribute('d','M'+sx+' '+sy+' C'+cp1x+' '+cp1y+','+cp2x+' '+cp2y+','+ex+' '+ey);
-    pathEl.setAttribute('stroke','var(--accent)');
-    pathEl.setAttribute('stroke-width','1.5');
-    pathEl.setAttribute('fill','none');
-    pathEl.setAttribute('stroke-dasharray','5 4');
-    pathEl.setAttribute('opacity','0.7');
-    var dotEl = document.createElementNS(ns,'circle');
-    dotEl.setAttribute('r','4');
-    dotEl.setAttribute('fill','var(--accent)');
-    svg.appendChild(pathEl);
-    svg.appendChild(dotEl);
-    document.body.appendChild(svg);
-    var start = null;
-    function animTraj(ts) {
-      if (!start) start = ts;
-      var p = Math.min((ts - start) / 900, 1), mp = 1-p;
-      dotEl.setAttribute('cx', mp*mp*mp*sx + 3*mp*mp*p*cp1x + 3*mp*p*p*cp2x + p*p*p*ex);
-      dotEl.setAttribute('cy', mp*mp*mp*sy + 3*mp*mp*p*cp1y + 3*mp*p*p*cp2y + p*p*p*ey);
-      if (p < 1) { requestAnimationFrame(animTraj); }
-      else {
-        setTimeout(function(){
-          svg.style.transition='opacity 0.4s';
-          svg.style.opacity='0';
-          setTimeout(function(){svg.remove();},450);
-        }, 350);
-      }
-    }
-    requestAnimationFrame(animTraj);
-  }
-
-  var tagFX = {
-    'Deep Learning':  fxNeuralPulse,
-    'Computer Vision': fxScanLine,
-    'NLP':            fxTokens,
-    'Multimodal AI':  fxFusion,
-    'ML Engineering': fxTerminal,
-    'Robotics':       fxTrajectory
+  /* ---- 5. Skill Tag — falling items + robot collector ---- */
+  var DROPS = {
+    'Deep Learning':   [['W','b','\u2207','ReLU','\u03c3','\u2202'],['LSTM','CNN','\u2297','BN','\u03b7','\u2192'],['loss','grad','SGD','Adam','\u2202L','\u03b5']],
+    'Computer Vision': [['RGB','px','\u25a3','\u25a4','\u2295','conv'],['bbox','IoU','YOLO','pool','\u2194','\u2195'],['HOG','SIFT','mask','edge','\u00d7','\u2218']],
+    'NLP':             [['the','AI','\u2192','token','UNK','\u2211'],['attn','Q','K','V','BERT','BPE'],['seq','pos','enc','dec','\u2601','pad']],
+    'Multimodal AI':   [['img','txt','\u2194','\u221e','\u2295','vec'],['CLIP','fuse','cross','attn','proj','\u2192'],['VQA','enc','dec','T','V','align']],
+    'ML Engineering':  [['{','}','()','[]','pip','\u03bb'],['CI','CD','API','git','py','\u2218'],['GPU','AWS','log','\u21ba','::','test']],
+    'Robotics':        [['\u2699','\u03c4','FK','IK','\u0394t','\u222b'],['sim','PID','DOF','nav','vel','map'],['VLA','plan','URDF','ctrl','\u27f3','ZST']]
   };
 
-  document.querySelectorAll('.skill-tag').forEach(function (tag) {
-    tag.addEventListener('click', function () {
-      tag.classList.toggle('is-active');
-      if (tag.classList.contains('is-active')) {
-        var fn = tagFX[tag.textContent.trim()];
-        if (fn) fn(tag);
+  var clickCounts = {};
+  var fallenItems = [];
+  var physicsLive = false;
+  var GRAV = 0.46;
+
+  function flashTag(el) {
+    el.classList.add('is-active');
+    setTimeout(function(){ el.classList.remove('is-active'); }, 650);
+  }
+
+  function spawnDrops(name, rect) {
+    var batch = (clickCounts[name] || 1) - 1;
+    var words = DROPS[name][batch];
+    var cx = rect.left + rect.width * 0.5;
+    var startY = rect.top + rect.height * 0.5;
+    var floorY = rect.bottom + 128;
+    words.forEach(function(w) {
+      var el = document.createElement('span');
+      el.textContent = w;
+      el.style.cssText = 'position:fixed;font-size:11px;font-weight:700;font-family:monospace;' +
+        'color:#fff;background:var(--accent);padding:2px 8px;border-radius:999px;' +
+        'pointer-events:none;z-index:8500;transform:translateX(-50%);';
+      el.style.left = cx + 'px';
+      el.style.top  = startY + 'px';
+      document.body.appendChild(el);
+      fallenItems.push({ el:el, x:cx, y:startY,
+        vx:(Math.random()-0.5)*9, vy:-(4+Math.random()*5),
+        floorY:floorY, settled:false });
+    });
+    if (!physicsLive) { physicsLive = true; stepPhysics(); }
+  }
+
+  function stepPhysics() {
+    if (!physicsLive) return;
+    var active = false;
+    fallenItems.forEach(function(p) {
+      if (p.settled) return;
+      active = true;
+      p.vy += GRAV; p.vx *= 0.996;
+      p.x  += p.vx; p.y  += p.vy;
+      if (p.y >= p.floorY) {
+        p.y = p.floorY;
+        p.vy *= -0.38; p.vx *= 0.80;
+        if (Math.abs(p.vy) < 1 && Math.abs(p.vx) < 0.5) { p.vy=0; p.vx=0; p.settled=true; }
       }
+      p.el.style.left = p.x + 'px';
+      p.el.style.top  = p.y + 'px';
+    });
+    if (active) { requestAnimationFrame(stepPhysics); } else { physicsLive = false; }
+  }
+
+  function robotCollect(rect) {
+    physicsLive = false;
+    var btnCx = rect.left + rect.width * 0.5;
+    var btnCy = rect.top  + rect.height * 0.5;
+
+    var robot = document.createElement('div');
+    robot.style.cssText = 'position:fixed;font-size:28px;z-index:9500;pointer-events:none;' +
+      'left:'+btnCx+'px;top:'+btnCy+'px;' +
+      'transform:translate(-50%,-50%) scale(0);' +
+      'transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);';
+    robot.textContent = '\uD83E\uDD16';
+    document.body.appendChild(robot);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      robot.style.transform = 'translate(-50%,-50%) scale(1)';
+    }); });
+
+    if (fallenItems.length === 0) {
+      setTimeout(function(){
+        robot.style.transform = 'translate(-50%,-50%) scale(0)';
+        setTimeout(function(){ robot.remove(); }, 380);
+      }, 750);
+      return;
+    }
+
+    var sumX = 0, sumY = 0;
+    fallenItems.forEach(function(p){ sumX += p.x; sumY += p.y; });
+    var centX = sumX / fallenItems.length;
+    var centY = sumY / fallenItems.length;
+
+    setTimeout(function() {
+      robot.style.transition = 'left 0.7s ease-in-out, top 0.65s ease-in-out';
+      robot.style.left = centX + 'px';
+      robot.style.top  = (centY - 24) + 'px';
+    }, 420);
+
+    setTimeout(function() {
+      fallenItems.forEach(function(p) {
+        p.el.style.transition = 'left 0.38s ease-in, top 0.38s ease-in, opacity 0.38s, transform 0.38s';
+        p.el.style.left      = centX + 'px';
+        p.el.style.top       = centY + 'px';
+        p.el.style.opacity   = '0.15';
+        p.el.style.transform = 'translate(-50%,-50%) scale(0.35)';
+      });
+    }, 1220);
+
+    var ball = document.createElement('div');
+    ball.style.cssText = 'position:fixed;left:'+centX+'px;top:'+centY+'px;' +
+      'width:22px;height:22px;border-radius:50%;background:var(--accent-light);' +
+      'transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:9400;' +
+      'box-shadow:0 0 10px var(--accent);' +
+      'transition:transform 0.32s cubic-bezier(.34,1.56,.64,1);';
+    document.body.appendChild(ball);
+    setTimeout(function(){ ball.style.transform = 'translate(-50%,-50%) scale(1)'; }, 1630);
+
+    setTimeout(function() {
+      robot.style.transition = 'left 0.72s ease-in-out, top 0.68s ease-in-out';
+      ball.style.transition  = 'left 0.72s ease-in-out, top 0.68s ease-in-out';
+      robot.style.left = btnCx + 'px'; robot.style.top = btnCy + 'px';
+      ball.style.left  = btnCx + 'px'; ball.style.top  = btnCy + 'px';
+    }, 2020);
+
+    setTimeout(function() {
+      robot.style.transition = 'transform 0.32s, opacity 0.28s';
+      ball.style.transition  = 'transform 0.32s, opacity 0.28s';
+      robot.style.transform  = 'translate(-50%,-50%) scale(0)'; robot.style.opacity = '0';
+      ball.style.transform   = 'translate(-50%,-50%) scale(0)'; ball.style.opacity  = '0';
+    }, 2800);
+
+    setTimeout(function() {
+      robot.remove(); ball.remove();
+      fallenItems.forEach(function(p){ p.el.remove(); });
+      fallenItems.length = 0;
+      for (var k in clickCounts) { delete clickCounts[k]; }
+      document.querySelectorAll('.skill-tag').forEach(function(t){ t.classList.remove('is-active'); });
+    }, 3150);
+  }
+
+  document.querySelectorAll('.skill-tag').forEach(function(tag) {
+    tag.addEventListener('click', function() {
+      var name = tag.textContent.trim();
+      flashTag(tag);
+      if (name === 'Robotics') { robotCollect(tag.getBoundingClientRect()); return; }
+      clickCounts[name] = (clickCounts[name] || 0) + 1;
+      if (clickCounts[name] > 3) { clickCounts[name] = 3; return; }
+      spawnDrops(name, tag.getBoundingClientRect());
     });
   });
 
