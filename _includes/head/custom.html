@@ -413,7 +413,7 @@ html[data-theme="dark"] .custom-toc__link.is-active {
   height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--accent-light), #C7D2FE, var(--accent));
   background-size: 300% 100%;
-  animation: gradientMove 4s linear infinite;
+  animation: gradientMove 8s linear infinite;
   border-radius: 2px;
 }
 
@@ -559,23 +559,24 @@ html[data-theme="dark"] .custom-toc__link.is-active {
 }
 
 /* ---- Particle Canvas ---- */
+/* z-index: -1 puts the canvas behind all body content.
+   Body's background-color would normally cover it, so we move the
+   background to <html> and make <body> transparent instead. */
+html {
+  background-color: var(--global-bg-color) !important;
+}
+body {
+  background-color: transparent !important;
+}
 #particle-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 }
-
-/* Ensure content layers sit above the particle canvas */
-.masthead       { z-index: 20 !important; }
-#main           { position: relative; z-index: 1; }
-.page__footer   { position: relative; z-index: 1; }
-.sidebar        { z-index: 5 !important; }
-#toc-toggle-btn { z-index: 50 !important; }
-#custom-toc     { z-index: 49 !important; }
 
 /* ==========================================================================
    DARK MODE OVERRIDES  (html[data-theme="dark"])
