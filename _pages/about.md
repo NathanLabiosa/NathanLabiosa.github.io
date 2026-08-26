@@ -4,9 +4,9 @@ title: "Nathan Labiosa"
 author_profile: true
 ---
 
-Hi! I’m **Nathan Labiosa**, a graduate student at the **University of Southern California** pursuing an **M.S. in Computer Science**. My work spans **deep learning**, **computer vision**, **natural language processing (NLP)**, and **reinforcement learning (RL)**, with a focus on **empirically grounded, interpretable AI**.
+Hi! I’m **Nathan Labiosa**, an ML engineer who ships models into production and a graduate student at the **University of Southern California** pursuing an **M.S. in Computer Science**. At **Visa**, I built a multi-agent ML pipeline that lifted production model performance **2–10%** across team runs. I've also deployed **eight drug-activity models** into a live product and distilled a **65B-parameter multimodal model to 7B at 92% lower compute**. I'm a **NeurIPS 2025** author.
 
-I’m passionate about applying machine learning to **real-world, high-impact problems**—from healthcare to space systems—and thrive at the **intersection of research and engineering**.
+My work spans **deep learning**, **computer vision**, **natural language processing (NLP)**, and **reinforcement learning (RL)**, with a focus on **empirically grounded, interpretable AI**. I'm passionate about applying machine learning to **real-world, high-impact problems**—from healthcare to space systems—and thrive at the **intersection of research and engineering**.
 
 <div class="skill-tags">
   <span class="skill-tag">Deep Learning</span>

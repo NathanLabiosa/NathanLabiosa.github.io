@@ -16,17 +16,35 @@ redirect_from:
 
 ---
 
+## Skills
+- **ML Frameworks:** PyTorch, DeepSpeed (distributed training), Hugging Face, TensorFlow, Scikit-learn, LangChain, LangGraph
+- **Infrastructure & Serving:** AWS, GCP, Docker, Linux, Git, ETL pipelines, MLOps
+- **Data & Retrieval:** SQL (PostgreSQL, SQLite), vector databases, Neo4j/Cypher, RAG, GraphRAG
+- **Languages:** Python, C++, SQL, Bash
+- **Domains:** Computer Vision, NLP, RL, Embeddings and Retrieval, Multimodal Models
+
+---
+
 ## Experience
+
+**Machine Learning Engineer Intern**
+_Visa, Austin, TX (May 2026–Aug 2026)_
+- Built and deployed an autonomous, containerized DS pipeline (10-agent LangGraph DAG via FastAPI and ChromaDB) to Visa's Sentinel Grid Kubernetes platform, compressing 1 week of data-scientist workflow into 30 minutes with human-in-the-loop review gates.
+- Designed a dual-write experiment knowledge base (SQLite + ChromaDB, 11 vector collections) that surfaces cross-team modeling priors, improving downstream model performance **2–10%** and cutting redundant pipeline iterations **2×**.
+- Implemented zero-overhead feature attribution via counterfactual metric deltas computed in SQL against historical runs, measuring feature effectiveness without in-run ablations.
+- Diagnosed three production blockers (single-writer DB serialization, synchronous training blocking the async event loop, per-process event bus) and led migration to a PostgreSQL pool, dedicated REST compute service, and pub/sub events.
+
+---
 
 **Research Assistant — Physical Superintelligence Lab**
 _University of Southern California, Los Angeles, CA (Aug 2025–Present)_
-- Developing **meta-learning algorithms** for Vision-Language-Action (VLA) models, enabling rapid adaptation to unseen physical dynamics (mass, friction).
-- Engineering generalizable control policies capable of **zero-shot transfer** across varying robot kinematics and visual domains, bridging the sim-to-real gap.
+- Training a **pi0.5 vision-language-action model** on ~30M frames from DROID and other manipulation datasets for in-context adaptation to unseen robot embodiments.
+- Developed an **embodiment-conditioning method** that predicts action-normalization parameters from ~20 frames of motion context (same- and cross-episode), enabling a single policy to adapt its action distribution to new kinematics without retraining.
 
 ---
 
 **Machine Learning Intern**
-_Advanced Space, Denver, CO (May–Aug 2025)_
+_Advanced Space, Westminster, CO (May–Aug 2025)_
 - Built an automated **ETL pipeline** using Python and Neo4j to ingest and structure 5,000+ technical documents, reducing data retrieval latency by 30%.
 - Developed a **GraphRAG system** with a modular MCP tool integrating Cypher query generation; outperformed baseline vector search accuracy by 18% on complex, multi-hop queries.
 - Created and optimized **RL/IRL algorithms** for multi-object simulation environments, achieving >85% success rates in latent goal inference through hyperparameter tuning.
@@ -35,7 +53,7 @@ _Advanced Space, Denver, CO (May–Aug 2025)_
 ---
 
 **Machine Learning Engineer**
-_Revilico Inc, Los Angeles, CA (Jun 2024–May 2025)_
+_Revilico Inc, Los Angeles, CA (Apr 2024–May 2025)_
 - Architected and managed **model training pipelines on AWS**, optimizing compute resources to validate eight novel drug activity predictors.
 - Standardized model inference scripts and artifacts, streamlining handoff to DevOps and enabling seamless integration into the user-facing frontend.
 - Engineered **feature extraction tools for SMILES sequences**, boosting IC50/EC50 prediction R² scores by ~0.12 through improved data representation.
@@ -54,7 +72,7 @@ _University of Wisconsin–Madison (May 2024–May 2025)_
 ---
 
 **Visual Large Language Model Researcher**
-_University of Central Florida (May–Dec 2023)_
+_University of Central Florida (May–Oct 2023)_
 - Oversaw collaboration with researchers from UCF and Meta, driving advancements in large language model research.
 - Refined complex **65B-parameter models** into streamlined 7B-parameter university-level models, reducing compute cost by 92%.
 - Devised a **VLLM training method** merging 150k+ images and 160k+ text examples across multiple training stages.
